@@ -1,0 +1,26 @@
+[project]
+name = "mastodon-bookmark-search"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Frederik Elwert", email = "frederik.elwert@rub.de" }
+]
+dependencies = [
+    "Mastodon.py>=1.8.1",
+    "polars>=0.20.7",
+    "streamlit>=1.31.1",
+    "bleach>=6.1.0",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
