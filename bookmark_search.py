@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import html
 import logging
 import sys
 from pathlib import Path
-import html
 
 import bleach
 import polars as pl
@@ -21,10 +21,17 @@ def read_bookmarks():
         "language",
         "url",
         "content",
-        pl.col("content")
-        .str.replace_all(r"<br>", "\n")
-        .map_elements(lambda s: html.unescape(bleach.clean(s, tags={}, strip=True)))
-        .alias("text"),
+        pl.concat_str(
+            pl.col("content")
+            .str.replace_all(r"<br>", "\n")
+            .map_elements(
+                lambda s: html.unescape(bleach.clean(s, tags={}, strip=True))
+            ),
+            pl.col("card").struct.field("title"),
+            pl.col("card").struct.field("description"),
+            separator="\n",
+            ignore_nulls=True,
+        ).alias("text"),
         "replies_count",
         "reblogs_count",
         "favourites_count",
@@ -59,6 +66,7 @@ def main():
     logging.basicConfig(level=level)
     # Return exit value
     data = read_bookmarks()
+    print(data.get_column("text"))
     hashtags = get_hashtags(data)
     print(hashtags)
     return 0
