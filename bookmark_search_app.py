@@ -80,7 +80,9 @@ def main():
         print(selected_topic, topic_id)
         data = data.filter(pl.col("topic") == topic_id)
     if search_text:
-        data = data.filter(pl.col("text").str.contains(search_text))
+        data = data.filter(
+            pl.col("text").str.to_lowercase().str.contains(search_text.lower())
+        )
     # Display results
     for row in data.iter_rows(named=True):
         st.markdown(
