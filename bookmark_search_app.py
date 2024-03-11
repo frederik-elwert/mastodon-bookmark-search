@@ -85,11 +85,14 @@ def main():
         )
     # Display results
     for row in data.iter_rows(named=True):
+        text = row["text"]
+        if search_text:
+            text = text.replace(search_text, f":orange[{search_text}]")
         st.markdown(
             f"""
 **{row["user_display_name"]}** :gray[@{row["user_acct"].replace("@", "​@")}]
 
-{row["text"]}
+{text}
 """
         )
         st.caption(f"""[{row["created_at"]}]({row["url"]})""")
