@@ -56,8 +56,12 @@ def main():
     )
     topic_info = pl.from_pandas(topic_model.get_topic_info())
     # Add topic info to data
-    new_topics = topic_model.reduce_outliers(docs, topic_model.topics_)
-    data = data.with_columns(pl.Series(name="topic", values=new_topics))
+    topics = topic_model.topics_
+    new_topics = topic_model.reduce_outliers(docs, topics)
+    data = data.with_columns(
+        pl.Series(name="topic", values=topics),
+        pl.Series(name="new_topic", values=new_topics),
+    )
     # Configure sidebar
     with st.sidebar:
         search_text = st.text_input("Search")
@@ -66,6 +70,7 @@ def main():
         selected_tags = st.multiselect("Hashtags", options=tag_options)
         topic_options = topic_info.get_column("Name")
         selected_topic = st.selectbox("Topic", options=topic_options, index=None)
+        reduce_outliers = st.toggle("Reduce outliers")
     # Filter data
     for tag in selected_tags:
         data = data.filter(pl.col("hashtags").list.contains(tag))
@@ -78,7 +83,10 @@ def main():
             .item()
         )
         print(selected_topic, topic_id)
-        data = data.filter(pl.col("topic") == topic_id)
+        if reduce_outliers:
+            data = data.filter(pl.col("new_topic") == topic_id)
+        else:
+            data = data.filter(pl.col("topic") == topic_id)
     if search_text:
         data = data.filter(
             pl.col("text").str.to_lowercase().str.contains(search_text.lower())
