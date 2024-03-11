@@ -10,6 +10,7 @@ dependencies = [
     "polars>=0.20.7",
     "streamlit>=1.31.1",
     "bleach>=6.1.0",
+    "bertopic>=0.16.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
@@ -20,7 +21,9 @@ build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-dev-dependencies = []
+dev-dependencies = [
+    "jupyterlab>=4.1.4",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true
