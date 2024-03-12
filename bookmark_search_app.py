@@ -43,6 +43,11 @@ def compute_topics(docs, *, embeddings, _embedding_model):
     return topic_model
 
 
+@st.cache_data
+def generate_topic_map(_topic_model, *, docs, embeddings):
+    return _topic_model.visualize_documents(docs=docs, embeddings=embeddings)
+
+
 def main():
     # Site title
     st.title("Mastodon Bookmark Search")
@@ -71,6 +76,7 @@ def main():
         topic_options = topic_info.get_column("Name")
         selected_topic = st.selectbox("Topic", options=topic_options, index=None)
         reduce_outliers = st.toggle("Reduce outliers")
+        show_topic_map = st.toggle("Show topic map")
     # Filter data
     for tag in selected_tags:
         data = data.filter(pl.col("hashtags").list.contains(tag))
@@ -91,6 +97,10 @@ def main():
         data = data.filter(
             pl.col("text").str.to_lowercase().str.contains(search_text.lower())
         )
+    # Display topic map
+    if show_topic_map:
+        topic_map = generate_topic_map(topic_model, docs=docs, embeddings=embeddings)
+        st.plotly_chart(topic_map)
     # Display results
     for row in data.iter_rows(named=True):
         text = row["text"]
