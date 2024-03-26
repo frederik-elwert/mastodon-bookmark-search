@@ -69,18 +69,23 @@ def main():
     )
     # Configure sidebar
     with st.sidebar:
-        search_text = st.text_input("Search")
+        st.header("Filters")
+        st.subheader("Search")
+        search_text = st.text_input("Search text")
         use_semantic_search = st.toggle("Use semantic search")
+        st.subheader("Hashtags")
         hashtags = bookmark_search.get_hashtags(data)
         tag_options = hashtags.filter(pl.col("count") > 1).get_column("hashtags")
         selected_tags = st.multiselect("Hashtags", options=tag_options)
+        st.subheader("Topic")
         topic_options = topic_info.get_column("Name")
         selected_topic = st.selectbox("Topic", options=topic_options, index=None)
         reduce_outliers = st.toggle("Reduce outliers")
         show_topic_map = st.toggle("Show topic map")
-    # Filter data
+    # Hashtag filter
     for tag in selected_tags:
         data = data.filter(pl.col("hashtags").list.contains(tag))
+    # Topic modeling
     if selected_topic:
         topic_id = (
             # fmt:off
@@ -94,6 +99,7 @@ def main():
             data = data.filter(pl.col("new_topic") == topic_id)
         else:
             data = data.filter(pl.col("topic") == topic_id)
+    # Search
     if search_text:
         if use_semantic_search:
             from sentence_transformers import util
