@@ -70,6 +70,7 @@ def main():
     # Configure sidebar
     with st.sidebar:
         search_text = st.text_input("Search")
+        use_semantic_search = st.toggle("Use semantic search")
         hashtags = bookmark_search.get_hashtags(data)
         tag_options = hashtags.filter(pl.col("count") > 1).get_column("hashtags")
         selected_tags = st.multiselect("Hashtags", options=tag_options)
@@ -94,9 +95,24 @@ def main():
         else:
             data = data.filter(pl.col("topic") == topic_id)
     if search_text:
-        data = data.filter(
-            pl.col("text").str.to_lowercase().str.contains(search_text.lower())
-        )
+        if use_semantic_search:
+            from sentence_transformers import util
+
+            query_embedding = embedding_model.encode(
+                search_text, convert_to_tensor=True
+            )
+            n_results = 20
+            hits = util.semantic_search(query_embedding, embeddings, top_k=n_results)
+            hits_df = pl.DataFrame(hits[0], schema_overrides={"corpus_id": pl.UInt32})
+            data = (
+                data.with_row_index()
+                .join(hits_df, left_on="index", right_on="corpus_id")
+                .sort("score", descending=True)
+            )
+        else:
+            data = data.filter(
+                pl.col("text").str.to_lowercase().str.contains(search_text.lower())
+            )
     # Display topic map
     if show_topic_map:
         topic_map = generate_topic_map(topic_model, docs=docs, embeddings=embeddings)
