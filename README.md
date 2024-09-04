@@ -10,12 +10,16 @@ A simple web application based on Streamlit that allows you to search and explor
     pipenv install
     ```
 
-2. Set up credentials for your Mastodon server following the example for [Mastodon.py](https://github.com/halcy/Mastodon.py).
+2. Set up credentials for your Mastodon server with
+
+    ```bash
+    pipenv run python ingest_bookmarks.py login
+    ```
 
 3. Import your bookmarks with
 
     ```bash
-    pipenv run python ingest_bookmarks.py
+    pipenv run python ingest_bookmarks.py ingest
     ```
 
 4. Run the web app with
