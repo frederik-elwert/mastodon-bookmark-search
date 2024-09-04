@@ -1,0 +1,14 @@
+[project]
+name = "mastodon-bookmark-search"
+version = "0.1.0"
+description = "A simple web application to search and explore your Mastodon bookmarks"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "bertopic>=0.16.3",
+    "bleach>=6.1.0",
+    "llvmlite>=0.43.0",
+    "mastodon-py>=1.8.1",
+    "polars>=1.6.0",
+    "streamlit>=1.38.0",
+]
