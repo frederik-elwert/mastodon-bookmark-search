@@ -10,6 +10,8 @@ A simple web application based on Streamlit that allows you to search and explor
     pipenv install
     ```
 
+Currently, the dependencies are locked for Python 3.10 on Linux. If you are on a different version or platform and pipenv fails, try deleting the virtual environment (with `pipenv --rm`), delete (or rename) _`Pipfile.lock`_, and then run `pipenv install` again.
+
 2. Set up credentials for your Mastodon server with
 
     ```bash
